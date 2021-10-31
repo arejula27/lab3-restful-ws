@@ -26,14 +26,24 @@ class AddressBookServiceTest {
     @BeforeEach
     fun cleanRepository() {
         addressBook.clear()
+        
     }
 
     @Test
     fun serviceIsAlive() {
-        // Request the address book
-        val response = restTemplate.getForEntity("http://localhost:$port/contacts", Array<Person>::class.java)
-        assertEquals(200, response.statusCode.value())
-        assertEquals(0, response.body?.size)
+        // saving the state of the addres book
+        val initialState =addressBook.personList ;
+        for (i in 1..2) {
+             // Request the address book
+            val response = restTemplate.getForEntity("http://localhost:$port/contacts", Array<Person>::class.java)
+            //check correct response
+            assertEquals(200, response.statusCode.value())
+            assertEquals(0, response.body?.size)
+            
+        }
+        assertEquals(initialState, addressBook.personList)
+
+       
 
         //////////////////////////////////////////////////////////////////////
         // Verify that GET /contacts is well implemented by the service, i.e

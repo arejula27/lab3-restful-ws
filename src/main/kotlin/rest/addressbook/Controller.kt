@@ -25,7 +25,7 @@ class AddressBookController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    fun getPersons(): Response = Response.ok().entity(addressBook.personList).build()
+    fun getPeople(): Response = Response.ok().entity(addressBook.personList).build()
 
     /**
      * A POST /contacts request should add a new entry to the address book.

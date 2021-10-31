@@ -15,7 +15,7 @@ class AddressBook {
     var nextId = 1
 
     /**
-     * The list of persons in this address book.
+     * The list of People in this address book.
      *
      * @return a person list.
      */
