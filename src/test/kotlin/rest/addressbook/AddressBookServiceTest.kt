@@ -33,6 +33,7 @@ class AddressBookServiceTest {
     fun serviceIsAlive() {
         // saving the state of the addres book
         val initialState =addressBook.personList ;
+        //check if the request is idempotent
         for (i in 1..2) {
              // Request the address book
             val response = restTemplate.getForEntity("http://localhost:$port/contacts", Array<Person>::class.java)
@@ -41,6 +42,7 @@ class AddressBookServiceTest {
             assertEquals(0, response.body?.size)
             
         }
+        // check if the request is safe (adress book didn't chenge)
         assertEquals(initialState, addressBook.personList)
 
        
