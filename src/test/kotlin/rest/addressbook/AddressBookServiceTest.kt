@@ -206,8 +206,17 @@ class AddressBookServiceTest {
         // Update Maria
         val maria = Person(name = "Maria")
 
+        //Saving the current state
+        val initialState = addressBook.personList.get(1)
+
+   
+
         var response = restTemplate.exchange(juanURI, HttpMethod.PUT, HttpEntity(maria), Person::class.java)
         assertEquals(204, response.statusCode.value())
+
+
+        //saving the response 
+        var response1 = response
 
         // Verify that the update is real
         response = restTemplate.getForEntity(juanURI, Person::class.java)
@@ -231,6 +240,16 @@ class AddressBookServiceTest {
         // Verify that PUT /contacts/person/2 is well implemented by the service, i.e
         // complete the test to ensure that it is idempotent but not safe
         //////////////////////////////////////////////////////////////////////
+
+        //Check that is not safe, the state should have changed
+         assertNotEquals(addressBook.personList.get(1).name, initialState.name)
+         
+         //Checking it is idempontent, the response shuold be the same
+         //Saving the current state
+        var oldId = addressBook.nextId
+
+        var response2 = restTemplate.exchange(juanURI, HttpMethod.PUT, HttpEntity(maria), Person::class.java)
+       assertEquals(response1,response2)
     }
 
     @Test
