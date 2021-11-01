@@ -261,6 +261,8 @@ class AddressBookServiceTest {
         addressBook.personList.add(salvador)
         addressBook.personList.add(juan)
 
+        //save initial state
+        var initialState = addressBook.personList.size
         // Delete a user
         restTemplate.execute(juanURI, HttpMethod.DELETE, {}, { assertEquals(204, it.statusCode.value()) })
 
@@ -271,6 +273,17 @@ class AddressBookServiceTest {
         // Verify that DELETE /contacts/person/2 is well implemented by the service, i.e
         // complete the test to ensure that it is idempotent but not safe
         //////////////////////////////////////////////////////////////////////
+        
+        //checking it is not safe, the vauke should have changed
+         assertNotEquals(addressBook.personList.size, initialState)
+
+         //Save teh new state
+         var stateAfter = addressBook.personList.size
+
+         //checkin it is idempotent, the sate should be equal after a second request
+         restTemplate.execute(juanURI, HttpMethod.DELETE, {}, { assertEquals(204, it.statusCode.value()) })
+        assertEquals(addressBook.personList.size, stateAfter)
+
     }
 
     @Test
