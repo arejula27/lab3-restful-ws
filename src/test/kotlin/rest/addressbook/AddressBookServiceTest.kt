@@ -132,6 +132,10 @@ class AddressBookServiceTest {
         assertEquals(3, mariaUpdated?.id)
         assertEquals(mariaURI, mariaUpdated?.href)
 
+        //saving the current state 
+        var initialId = addressBook.nextId
+        var initialListSize = addressBook.personList.size
+
         // Check that the new user exists
         response = restTemplate.getForEntity(mariaURI, Person::class.java)
 
@@ -146,6 +150,14 @@ class AddressBookServiceTest {
         // Verify that GET /contacts/person/3 is well implemented by the service, i.e
         // complete the test to ensure that it is safe and idempotent
         //////////////////////////////////////////////////////////////////////
+
+        //checking it is safe
+        assertEquals(addressBook.personList.size, initialListSize)
+        assertEquals(addressBook.nextId, initialId)
+
+        var response2 = restTemplate.getForEntity(mariaURI, Person::class.java)
+        //checking it is idempotent
+        assertEquals(response,response2)
     }
 
     @Test
