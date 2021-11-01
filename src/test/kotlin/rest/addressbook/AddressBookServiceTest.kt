@@ -169,6 +169,10 @@ class AddressBookServiceTest {
         addressBook.personList.add(salvador)
         addressBook.personList.add(juan)
 
+        //saving the current state 
+        var initialId = addressBook.nextId
+        var initialListSize = addressBook.personList.size
+
         // Test list of contacts
         val response = restTemplate.getForEntity("http://localhost:$port/contacts", Array<Person>::class.java)
         assertEquals(200, response.statusCode.value())
@@ -180,6 +184,14 @@ class AddressBookServiceTest {
         // Verify that GET /contacts is well implemented by the service, i.e
         // complete the test to ensure that it is safe and idempotent
         //////////////////////////////////////////////////////////////////////
+
+        //checking it is safe
+        assertEquals(addressBook.personList.size, initialListSize)
+        assertEquals(addressBook.nextId, initialId)
+
+        var response2 = restTemplate.getForEntity("http://localhost:$port/contacts", Array<Person>::class.java)
+        //checking it is idempotent
+        assertEquals(response,response2)
     }
 
     @Test
