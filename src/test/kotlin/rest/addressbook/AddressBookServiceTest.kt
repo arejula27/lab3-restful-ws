@@ -1,7 +1,7 @@
 package rest.addressbook
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,16 +45,14 @@ class AddressBookServiceTest {
         // check if the request is safe (adress book didn't chenge)
         assertEquals(initialState, addressBook.personList)
 
-       
-
-        //////////////////////////////////////////////////////////////////////
-        // Verify that GET /contacts is well implemented by the service, i.e
-        // complete the test to ensure that it is safe and idempotent
-        //////////////////////////////////////////////////////////////////////
     }
 
     @Test
     fun createUser() {
+
+         // saving the state of the addres book
+        var initialSize =addressBook.personList.size;
+        var oldId = addressBook.nextId
 
         // Prepare data
         val juan = Person(name = "Juan")
@@ -81,10 +79,29 @@ class AddressBookServiceTest {
         assertEquals(1, juanUpdated?.id)
         assertEquals(juanURI, juanUpdated?.href)
 
+
+        
+
         //////////////////////////////////////////////////////////////////////
         // Verify that POST /contacts is well implemented by the service, i.e
         // complete the test to ensure that it is not safe and not idempotent
         //////////////////////////////////////////////////////////////////////
+        // check if the request is not safe (adress book should chenge)
+        assertNotEquals(addressBook.personList.size, initialSize)
+        assertNotEquals(addressBook.nextId, oldId)
+
+        //checking if is idempotent
+        //saving the current state
+        initialSize =addressBook.personList.size;
+        oldId = addressBook.nextId
+
+        //doing the request
+        var response2 = restTemplate.postForEntity("http://localhost:$port/contacts", juan, Person::class.java)
+        //chequing the response is different
+        assertNotEquals(response,response2)
+        //check the state has changed
+        assertNotEquals(addressBook.personList.size, initialSize)
+        assertNotEquals(addressBook.nextId, oldId)
     }
 
     @Test
